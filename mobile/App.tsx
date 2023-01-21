@@ -1,3 +1,4 @@
+import './src/lib/dayjs'
 import { StyleSheet, Text, View, StatusBar } from 'react-native';
 import { 
   useFonts, 
@@ -8,6 +9,7 @@ import {
 } from '@expo-google-fonts/inter';
 
 import { Loading } from './src/components/Loading';
+import { Home } from './src/screens/Home'
 
 // garante que as fontes estejam carregadas antes de o aplicativo iniciar
 export default function App() {
@@ -25,23 +27,9 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Hello there! Why not trying to use Expo GO?</Text>
+    <>
+      <Home/>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-    </View>
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#09090A',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  text: {
-    fontFamily: 'Inter_800ExtraBold',
-    color: '#fff'
-  },
-});
