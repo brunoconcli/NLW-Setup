@@ -69,7 +69,7 @@ export async function appRoutes(app: FastifyInstance) {
         
         const completedHabits = day?.dayHabits.map(dayHabit => {
             return dayHabit.habit_id
-        })
+        }) ?? []
 
         return {
             possibleHabits,
@@ -80,51 +80,51 @@ export async function appRoutes(app: FastifyInstance) {
 
     app.patch('/habits/:id/toggle', async (request) => {
         const toggleHabitParams = z.object({
-            id: z.string().uuid(),
+          id: z.string().uuid()
         })
-
+    
         const { id } = toggleHabitParams.parse(request.params)
-
+    
         const today = dayjs().startOf('day').toDate()
-
+    
         let day = await prisma.day.findUnique({
-            where: {
-                date: today,
-            }
+          where: {
+            date: today
+          }
         })
-
-        if (!day) {
-            day = await prisma.day.create({
-                data: {
-                    date: today,
-                }
-            })
-        }
-
-        const dayHabit = await prisma.dayHabit.findUnique({
-            where: {
-                day_id_habit_id: {
-                    day_id: day.id,
-                    habit_id: id,
-                }
-            }
-        })
-
-        if (dayHabit) {
-            await prisma.dayHabit.delete({
-                where: {
-                    id: dayHabit.id,
-                }
-            })
-        }
-
-        await prisma.dayHabit.create({
+    
+        if(!day) {
+          day = await prisma.day.create({
             data: {
-                day_id : day.id,
-                habit_id: id,
+              date: today
             }
+          })
+        }
+    
+        const dayHabit = await prisma.dayHabit.findUnique({
+          where: {
+            day_id_habit_id: {
+              day_id: day.id,
+              habit_id: id
+            }
+          }
         })
-    })
+    
+        if(dayHabit) {
+          await prisma.dayHabit.delete({
+            where: {
+              id: dayHabit.id
+            }
+          })
+        } else {
+          await prisma.dayHabit.create({
+            data: {
+              day_id: day.id,
+              habit_id: id
+            }
+          })
+        }
+      })
 
     app.get('/summary', async () => {
         const summary = await prisma.$queryRaw`
